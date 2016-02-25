@@ -1,4 +1,4 @@
-全局使用 开始*/
+/*全局使用 开始*/
 div {
 	display: block;
 }
@@ -42,34 +42,30 @@ a:link {
 }*/
 /*弹出层 开始*/
 .Poup-show-layer {
-	position: fixed; left: 50%; top: 0px; margin-left: -250px; 
-	background-color: #fff;
-	width: 500px;
-	height: ;
+	position: fixed; left:50%;
 	border: 1px solid  rgba(0, 0, 0, .2); 										
 	border-radius: 6px;
-	box-shadow: 0 5px 15px rgba(0, 0, 0, .5), 0px 0px 2px rgba(255, 255, 0, 0.1) inset;
+	box-shadow: 0 5px 15px rgba(0, 0, 0, .1), 0px 0px 2px rgba(255, 255, 0, 0.1) inset;
 	background-clip: padding-box;
 	outline: 0;	
-	display: block;	
+	display: none;	
 	z-index: 10001;
-	overflow: hidden;															
+	overflow: none;	
+	background-color: #fff;
+	background: url(./images/loading.gif) no-repeat center center;														
 }
 .Poup-show-header {
-	padding: 4px 10px 4px 10px;
+	padding: 2px 10px;
 	border-bottom: 1px solid #e5e5e5;
 }
 .Poup-show-body {
-	position: relative;
-	min-height: 600px;
-	padding: 0px 10px 0px 10px;
+	padding: 0px 13px;
 }
 .Poup-show-body img {
 	display: block;
-	width: 100%;
 }
 .Poup-show-footer {
-	padding: 4px 10px 4px 10px;
+	padding: 2px 10px;
 	text-align: right;
 	border-top: 1px solid #e5e5e5;
 }
@@ -86,6 +82,7 @@ a:link {
 	height: 100%;
 	z-index: 1;
 	opacity: 0.5;
+	cursor:default;
 }
 .Poup-btn-r {
 	position: absolute;
@@ -95,6 +92,7 @@ a:link {
 	height: 100%;
 	z-index: 1;
 	opacity: 0.5;
+	cursor:default;
 }
 .Poup-show-btn {
 	display: inline-block;
@@ -122,9 +120,10 @@ a:link {
 	top: 0;
 	width: 100%;
 	height: 100%;
-	background-color: #000;
-	opacity: 0.5;
+	background-color: #fff;
+	opacity: 0.9;
 	z-index: 10000;
+	display: none;
 }
 /*遮罩层 结束*/
 /*图标样式 开始*/
@@ -243,4 +242,4 @@ a:link {
     box-shadow:1px 1px 2px rgba(0,0,0,0.4) inset;
     border-color:#80a9da;
 }
-/*图标样式 结束
+/*图标样式 结束*/
