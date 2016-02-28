@@ -3,13 +3,13 @@
 																							//面向对象，初始化，属性，行为、执行过程
 		var self = this;
 		//
-		this.renderDom();
-		this.winWidth  = $(window).width();
-		this.winHeight = $(window).height();
+		//this.winWidth  = $(window).width();
+		//this.winHeight = $(window).height();
 		//console.log("初始化时宽高："+this.winWidth+":"+this.winHeight);
 		this.poupLayer = $('<div class="Poup-show-layer" id="Poup-show-layer">');
 		this.poupMask  = $('<div id="Poup-mask">');
 		this.bodyNode  = $(document.body);
+		this.renderDom();
 		//
 		this.poupBodyArea= this.poupLayer.find("div.Poup-show-body");						//获取图片插入区域
 		this.poupPic	 = this.poupLayer.find("img.poup-image");							//获取图片
@@ -19,9 +19,9 @@
 		this.rightBtn	 = this.poupLayer.find("span.Poup-btn-r");							//
 		this.captionText = this.poupLayer.find("p.Poup-show-title");						//标题文字
 		this.show100Btn  = this.poupLayer.find("button.Poup-show100-btn");
-		this.showMoreBtn = this.poupLayer.find("button.Poup-show100-btn more");
 		this.closeBtnBtm = this.poupLayer.find("button.Poup-show-btn");
-		//console.log(this.show100Btn);																					//获取数据，事件委托
+		//this.showMoreBtn = this.poupLayer.find("button.more");
+		//console.log(this.showMoreBtn);																					//获取数据，事件委托
 		this.groupName = null;
 		this.groupData = [];																//放置同一组数据
 		this.bodyNode.delegate("[data-role=PoupMe]", 'click', function(e){
@@ -85,13 +85,75 @@
 		});
 		//
 		this.show100Btn.click(function(){
-			alert('100%');
-			
+			self.leftBtn.addClass('disabled').css('cursor', 'default');
+			self.rightBtn.addClass('disabled').css('cursor', 'default');
+			self.goto('zoom');
+			self.movePic2();
 		});
 	};
 	PoupMe.prototype = {
 		//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-		
+
+		movePic2:function(){
+			var self = this;
+			var winHeight= $(window).height();
+			var width = self.poupLayer.width();
+			var height= self.poupLayer.height();
+			var mouseOffsetX = 0;
+			var mouseOffsetY = 0;
+			var isDraging	 = false;
+			this.poupLayer.mousedown(function(e){
+				mouseOffsetX = e.pageX;
+				mouseOffsetY = e.pagey;
+				isDraging = true;
+			});
+			this.poupLayer.mousemove(function(e){
+				var mouseX = e.pageX;
+				var mouseY = e.pageY;															//鼠标当前的位置
+				var moveX  = 0;
+				var moveY  = 0;																	//鼠标移动距离
+				if (isDraging===true) {
+					moveX = mouseX - mouseOffsetX;
+					moveY = mouseY - mouseOffsetY;
+					//console.log(moveX,moveY);
+					self.poupLayer.css({'marginLeft': -(width/2)+moveX, 'top':(winHeight-height)/2+moveY});
+				};
+			});
+			this.poupLayer.mouseup(function(e){
+				isDraging = false;
+				//alert('up');
+			});
+		},
+
+		movePic:function(){
+			var self = this;
+			var width = self.poupLayer.width();
+			var isDraging = false;
+            var iX, iY;
+            this.poupLayer.mousedown(function(e) {
+                isDraging = true;
+                iX = e.clientX;															//距离拖动层左上角的位置
+                iY = e.clientY - this.offsetTop;
+                this.setCapture && this.setCapture();
+                return false;
+            });
+            document.onmousemove = function(e) {
+                if (isDraging) {
+                var e = e || window.event;
+                var oX = -(width/2) + (e.clientX - iX);												//e.clientX距离屏幕左上角
+                var oY = e.clientY - iY;
+                //console.log(e.clientX, e.clientY);
+                self.poupLayer.css({"marginLeft":oX+"px", "top":oY+"px"});
+                return false;
+                }
+            };
+            $(document).mouseup(function(e) {
+                isDraging = false;
+                self.poupLayer.releaseCapture();
+                e.cancelBubble = true;
+            })
+		},
+					
 		goto:function(dir){
 			if(dir=='right'){
 				this.index++;
@@ -102,7 +164,7 @@
 					this.leftBtn.removeClass('disabled').css('cursor', 'pointer');
 				};
 				var src = this.groupData[this.index].src;
-				this.loadPicSize(src);
+				this.loadPicSize(src,0);
 			}else if(dir=='left'){
 				this.index--;
 				if(this.index <= 0){
@@ -112,34 +174,59 @@
 					this.rightBtn.removeClass('disabled').css('cursor', 'pointer');
 				};
 				var src = this.groupData[this.index].src;
-				this.loadPicSize(src);
+				this.loadPicSize(src,0);
+			}else if(dir=='zoom'){
+				var src = this.groupData[this.index].src;
+				this.loadPicSize(src,1);
 			};
 		},
 		
-		loadPicSize:function(sourceSrc){
+		loadPicSize:function(sourceSrc,zoom){
 			var self = this;
-			self.poupPic.css({width:"auto",height:"auto"}).hide();
-			this.poupCaption.hide();
-			this.poupFooter.hide();
-			this.preLoadImg(sourceSrc, function(){
-				self.poupPic.attr("src", sourceSrc);
-				var picWidth = self.poupPic.width();
-				var picHeight= self.poupPic.height();
-				//console.log("图片真实比例:"+picWidth/picHeight);
-				//console.log("图片真实宽高:"+picWidth+":"+picHeight);
-				self.changePic(picWidth,picHeight);
+				self.poupPic.css({width:"auto",height:"auto"}).hide();
+				this.poupCaption.hide();
+				this.poupFooter.hide();
+				this.preLoadImg(sourceSrc, function(){
+					self.poupPic.attr("src", sourceSrc);
+					var picWidth = self.poupPic.width();
+					var picHeight= self.poupPic.height();
+					if (!zoom) {
+						self.changePic(picWidth,picHeight);
+					} else {
+						self.zoomPic(picWidth,picHeight);
+					};
+				});
+		},
+
+		zoomPic:function(width,height){
+			var self = this;
+			var winHeight= $(window).height();
+			this.poupBodyArea.animate({
+									width:width+28,
+									height:height
 			});
+			this.poupLayer.animate({
+									width:width+28,
+									height:height+52,
+									marginLeft:-(width/2),
+									top:(winHeight-height)/2
+			},function(){
+				self.poupPic.css({
+					width:width,
+					height:height
+				}).fadeIn();
+				self.poupCaption.fadeIn();
+				self.poupFooter.fadeIn();
+				self.flag = true;
+				self.clear= false;
+			});
+			this.captionText.text(this.groupData[this.index].caption);
 		},
 
 		changePic:function(width,height){
 			var self = this;
 			var winWidth = $(window).width();
 			var winHeight= $(window).height();
-			//console.log("变化照片时测得屏幕宽高:"+winWidth+":"+winHeight);
-			//>>如果图片的宽高大于浏览器的宽高比例，我们就看是否溢出
-			//>>如果图片宽高小于浏览器，我们等比放大
-			//>>当点击100%后，按照图片实际大小显示
-			//>>当点击100%后，弹出层(图片)处于可拖动状态，执行拖动
 			if (width>winWidth || height>winHeight) {
 				var scale = Math.min(winWidth/width, winHeight/height, 1);
 			} else if (width<winWidth && height<winHeight) {
@@ -147,9 +234,6 @@
 			};
 			width  = width*scale;
 			height = height*scale;
-			//console.log("scale的值是:"+scale);
-			//console.log("scale后比例:"+width/height);
-			//console.log("scale后宽高:"+width+":"+height);
 			this.poupBodyArea.animate({
 									width:width,
 									height:height-52
