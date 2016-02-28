@@ -56,7 +56,7 @@ a:link {
 }
 .Poup-show-header {
 	padding: 2px 10px;
-	border-bottom: 1px solid #e5e5e5;
+	border-bottom: 0px solid #e5e5e5;
 }
 .Poup-show-body {
 	padding: 0px 13px;
@@ -67,12 +67,39 @@ a:link {
 .Poup-show-footer {
 	padding: 2px 10px;
 	text-align: right;
-	border-top: 1px solid #e5e5e5;
+	border-top: 0px solid #e5e5e5;
 }
 .Poup-show-title {
 	margin: 0px;
-	line-height: 1.4;
+	line-height: 1.2;
+	opacity: 0.7;
+	text-align: center;
 	display: inline-block;
+	z-index: 2;
+}
+.Poup-show100-btn {
+	display: inline-block;
+	padding: 2px 10px;
+	margin-bottom: 0px;
+	position: absolute; right: 140px;
+	color: #333;
+	font-size: 8px;
+	font-weight: normal;
+	line-height: 1.2;
+	text-align: center;
+	white-space: nowrap;
+	vertical-align: middle;
+	background-color: #fff;
+	background-image: none;
+	border: 1px solid transparent;
+	border-color: #ccc;
+	border-radius: 3px;
+	touch-action: manipulation;
+	z-index: 2;
+}
+.more {
+	position: absolute; right: 78px;
+	padding: 2px 13px;	
 }
 .Poup-btn-l {
 	position: absolute;
@@ -83,6 +110,7 @@ a:link {
 	z-index: 1;
 	opacity: 0.5;
 	cursor:default;
+	z-index: 1;
 }
 .Poup-btn-r {
 	position: absolute;
@@ -93,6 +121,7 @@ a:link {
 	z-index: 1;
 	opacity: 0.5;
 	cursor:default;
+	z-index: 1;
 }
 .Poup-show-btn {
 	display: inline-block;
@@ -101,7 +130,7 @@ a:link {
 	color: #333;
 	font-size: 8px;
 	font-weight: normal;
-	line-height: 1.4;
+	line-height: 1.2;
 	text-align: center;
 	white-space: nowrap;
 	vertical-align: middle;
@@ -111,6 +140,8 @@ a:link {
 	border-color: #ccc;
 	border-radius: 3px;
 	touch-action: manipulation;
+	z-index: 2;
+	position: absolute;right: 16px;
 }
 /*弹出层 结束*/
 /*遮罩层 开始*/

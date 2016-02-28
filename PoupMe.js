@@ -3,14 +3,14 @@
 																							//面向对象，初始化，属性，行为、执行过程
 		var self = this;
 		//
+		this.renderDom();
 		this.winWidth  = $(window).width();
 		this.winHeight = $(window).height();
-		console.log("初始化时宽高："+this.winWidth+":"+this.winHeight);
+		//console.log("初始化时宽高："+this.winWidth+":"+this.winHeight);
 		this.poupLayer = $('<div class="Poup-show-layer" id="Poup-show-layer">');
 		this.poupMask  = $('<div id="Poup-mask">');
 		this.bodyNode  = $(document.body);
 		//
-		this.renderDom();
 		this.poupBodyArea= this.poupLayer.find("div.Poup-show-body");						//获取图片插入区域
 		this.poupPic	 = this.poupLayer.find("img.poup-image");							//获取图片
 		this.poupCaption = this.poupLayer.find("div.Poup-show-header");						//标题
@@ -18,9 +18,10 @@
 		this.leftBtn	 = this.poupLayer.find("span.Poup-btn-l");							//按钮
 		this.rightBtn	 = this.poupLayer.find("span.Poup-btn-r");							//
 		this.captionText = this.poupLayer.find("p.Poup-show-title");						//标题文字
-		this.closeBtnTop = this.poupLayer.find("button.close");
+		this.show100Btn  = this.poupLayer.find("button.Poup-show100-btn");
+		this.showMoreBtn = this.poupLayer.find("button.Poup-show100-btn more");
 		this.closeBtnBtm = this.poupLayer.find("button.Poup-show-btn");
-		//console.log(this.poupPic);																					//获取数据，事件委托
+		//console.log(this.show100Btn);																					//获取数据，事件委托
 		this.groupName = null;
 		this.groupData = [];																//放置同一组数据
 		this.bodyNode.delegate("[data-role=PoupMe]", 'click', function(e){
@@ -34,18 +35,98 @@
 																							//初始化弹框
 			self.initPoup($(this));
 		});
+		//
+		this.poupMask.click(function(){
+			$(this).fadeOut();
+			self.poupLayer.fadeOut();
+			self.clear = false;
+		});
+		this.closeBtnBtm.click(function(){
+			self.poupMask.fadeOut();
+			self.poupLayer.fadeOut();
+			self.clear = false;
+		});
+		//
+		this.flag = true;
+		this.rightBtn.click(function(e){
+			if(!$(this).hasClass('disabled') && self.flag){
+				self.flag = false;
+				e.stopPropagation();
+				self.goto('right');
+			};
+		});
+		this.leftBtn.click(function(e){
+			if(!$(this).hasClass('disabled') && self.flag){
+				self.flag = false;
+				e.stopPropagation();
+				self.goto('left');
+			};
+		});
+		//
+		var timer = null;
+		this.clear = false;
+		$(window).resize(function(){
+			if(self.clear){
+				window.clearTimeout(timer);
+				timer = window.setTimeout(function(){
+					self.loadPicSize(self.groupData[self.index].src);
+				},200);
+			};
+		}).keyup(function(e){
+			//console.log(e.which);
+			var keyValue = e.which;
+			if (self.clear) {
+				if (keyValue == 37) {
+					self.leftBtn.click();
+				} else if (keyValue == 39 ) {
+					self.rightBtn.click();
+				};
+			};
+		});
+		//
+		this.show100Btn.click(function(){
+			alert('100%');
+			
+		});
 	};
 	PoupMe.prototype = {
 		//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 		
+		goto:function(dir){
+			if(dir=='right'){
+				this.index++;
+				if(this.index >= this.groupData.length-1){
+					this.rightBtn.addClass('disabled').css('cursor', 'default');
+				};
+				if(this.index != 0){
+					this.leftBtn.removeClass('disabled').css('cursor', 'pointer');
+				};
+				var src = this.groupData[this.index].src;
+				this.loadPicSize(src);
+			}else if(dir=='left'){
+				this.index--;
+				if(this.index <= 0){
+					this.leftBtn.addClass('disabled').css('cursor', 'default');
+				};
+				if(this.index != this.groupData.length-1){
+					this.rightBtn.removeClass('disabled').css('cursor', 'pointer');
+				};
+				var src = this.groupData[this.index].src;
+				this.loadPicSize(src);
+			};
+		},
+		
 		loadPicSize:function(sourceSrc){
 			var self = this;
+			self.poupPic.css({width:"auto",height:"auto"}).hide();
+			this.poupCaption.hide();
+			this.poupFooter.hide();
 			this.preLoadImg(sourceSrc, function(){
 				self.poupPic.attr("src", sourceSrc);
 				var picWidth = self.poupPic.width();
 				var picHeight= self.poupPic.height();
-				console.log("图片真实比例:"+picWidth/picHeight);
-				console.log("图片真实宽高:"+picWidth+":"+picHeight);
+				//console.log("图片真实比例:"+picWidth/picHeight);
+				//console.log("图片真实宽高:"+picWidth+":"+picHeight);
 				self.changePic(picWidth,picHeight);
 			});
 		},
@@ -54,7 +135,7 @@
 			var self = this;
 			var winWidth = $(window).width();
 			var winHeight= $(window).height();
-			console.log("变化照片时测得屏幕宽高:"+winWidth+":"+winHeight);
+			//console.log("变化照片时测得屏幕宽高:"+winWidth+":"+winHeight);
 			//>>如果图片的宽高大于浏览器的宽高比例，我们就看是否溢出
 			//>>如果图片宽高小于浏览器，我们等比放大
 			//>>当点击100%后，按照图片实际大小显示
@@ -62,13 +143,13 @@
 			if (width>winWidth || height>winHeight) {
 				var scale = Math.min(winWidth/width, winHeight/height, 1);
 			} else if (width<winWidth && height<winHeight) {
-				var scale = Math.min(winWidth/width, winHeight/height ,1.2);				//实际测试，若照片太小，放大倍数过大后，效果很差，故限制1.2倍
+				var scale = Math.min(winWidth/width, winHeight/height ,1.3);				//实际测试，若照片太小，放大倍数过大后，效果很差，故限制1.2倍
 			};
-			
 			width  = width*scale;
 			height = height*scale;
-			console.log("scale后比例:"+width/height);
-			console.log("scale后宽高:"+width+":"+height);
+			//console.log("scale的值是:"+scale);
+			//console.log("scale后比例:"+width/height);
+			//console.log("scale后宽高:"+width+":"+height);
 			this.poupBodyArea.animate({
 									width:width,
 									height:height-52
@@ -85,7 +166,10 @@
 				}).fadeIn();
 				self.poupCaption.fadeIn();
 				self.poupFooter.fadeIn();
+				self.flag = true;
+				self.clear= true;
 			});
+			this.captionText.text(this.groupData[this.index].caption);
 		},
 
 		preLoadImg:function(src, callback){
@@ -105,7 +189,7 @@
 			this.poupMask.fadeIn();
 			var winWidth  = $(window).width();
 			var winHeight = $(window).height();
-			console.log("展现弹出层和遮罩层测得宽高:"+winWidth+":"+winHeight);
+			//console.log("展现弹出层和遮罩层测得宽高:"+winWidth+":"+winHeight);
 			
 			this.poupLayer.fadeIn();
 			this.poupLayer.css({
@@ -173,11 +257,10 @@
 																							//对象方法的实现
 		renderDom:function(){
 			var strDom =	'<div class="Poup-show-header" id="Poup-show-header">'+
-								'<button type="button" class="close" data-dismiss="modal">'+
-									'<span aria-hidden="true">×</span>'+
-									'<span class="sr-only">Close</span>'+
-								'</button>'+
-								'<p class="Poup-show-title">标题信息预留</p>'+
+								'<button type="button" class="Poup-show100-btn more" data-dismiss="modal">More</button>'+
+								'<button type="button" class="Poup-show100-btn" data-dismiss="modal">100%</button>'+
+								'<button type="button" class="Poup-show-btn" data-dismiss="modal">Close</button>'+
+								'<p class="Poup-show-title"></p>'+
 								'</div>'+
 							'<div class="Poup-show-body">'+
 								'<span class="Poup-btn-l"></span>'+
