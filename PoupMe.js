@@ -88,42 +88,11 @@
 			self.leftBtn.addClass('disabled').css('cursor', 'default');
 			self.rightBtn.addClass('disabled').css('cursor', 'default');
 			self.goto('zoom');
-			self.movePic2();
+			self.movePic();
 		});
 	};
 	PoupMe.prototype = {
 		//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-		movePic2:function(){
-			var self = this;
-			var winHeight= $(window).height();
-			var width = self.poupLayer.width();
-			var height= self.poupLayer.height();
-			var mouseOffsetX = 0;
-			var mouseOffsetY = 0;
-			var isDraging	 = false;
-			this.poupLayer.mousedown(function(e){
-				mouseOffsetX = e.pageX;
-				mouseOffsetY = e.pagey;
-				isDraging = true;
-			});
-			this.poupLayer.mousemove(function(e){
-				var mouseX = e.pageX;
-				var mouseY = e.pageY;															//鼠标当前的位置
-				var moveX  = 0;
-				var moveY  = 0;																	//鼠标移动距离
-				if (isDraging===true) {
-					moveX = mouseX - mouseOffsetX;
-					moveY = mouseY - mouseOffsetY;
-					//console.log(moveX,moveY);
-					self.poupLayer.css({'marginLeft': -(width/2)+moveX, 'top':(winHeight-height)/2+moveY});
-				};
-			});
-			this.poupLayer.mouseup(function(e){
-				isDraging = false;
-				//alert('up');
-			});
-		},
 
 		movePic:function(){
 			var self = this;
@@ -132,15 +101,15 @@
             var iX, iY;
             this.poupLayer.mousedown(function(e) {
                 isDraging = true;
-                iX = e.clientX;															//距离拖动层左上角的位置
-                iY = e.clientY - this.offsetTop;
+                iX = e.clientX;															
+                iY = e.clientY;
                 this.setCapture && this.setCapture();
                 return false;
             });
             document.onmousemove = function(e) {
                 if (isDraging) {
                 var e = e || window.event;
-                var oX = -(width/2) + (e.clientX - iX);												//e.clientX距离屏幕左上角
+                var oX = -(width/2) + (e.clientX - iX);									//e.clientX距离屏幕左上角
                 var oY = e.clientY - iY;
                 //console.log(e.clientX, e.clientY);
                 self.poupLayer.css({"marginLeft":oX+"px", "top":oY+"px"});
@@ -149,7 +118,9 @@
             };
             $(document).mouseup(function(e) {
                 isDraging = false;
-                self.poupLayer.releaseCapture();
+                this.releaseCapture;
+                //document.onmousemove=null; 
+                //document.onmouseup=null; 
                 e.cancelBubble = true;
             })
 		},
