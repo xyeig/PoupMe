@@ -3,9 +3,6 @@
 																							//面向对象，初始化，属性，行为、执行过程
 		var self = this;
 		//
-		//this.winWidth  = $(window).width();
-		//this.winHeight = $(window).height();
-		//console.log("初始化时宽高："+this.winWidth+":"+this.winHeight);
 		this.poupLayer = $('<div class="Poup-show-layer" id="Poup-show-layer">');
 		this.poupMask  = $('<div id="Poup-mask">');
 		this.bodyNode  = $(document.body);
@@ -20,7 +17,7 @@
 		this.captionText = this.poupLayer.find("p.Poup-show-title");						//标题文字
 		this.show100Btn  = this.poupLayer.find("button.Poup-show100-btn");
 		this.closeBtnBtm = this.poupLayer.find("button.Poup-show-btn");
-		//this.showMoreBtn = this.poupLayer.find("button.more");
+		this.showMoreBtn = this.poupLayer.find("button.Poup-more-btn");
 		//console.log(this.showMoreBtn);																					//获取数据，事件委托
 		this.groupName = null;
 		this.groupData = [];																//放置同一组数据
@@ -45,6 +42,11 @@
 			self.poupMask.fadeOut();
 			self.poupLayer.fadeOut();
 			self.clear = false;
+		});
+		//
+		this.showMoreBtn.click(function(){
+			//window.open({:U('photo/listIMG')});
+			//window.open({:U('photo/listIMG')});
 		});
 		//
 		this.flag = true;
@@ -93,38 +95,25 @@
 	};
 	PoupMe.prototype = {
 		//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
+		
 		movePic:function(){
 			var self = this;
-			var width = self.poupLayer.width();
 			var isDraging = false;
-            var iX, iY;
-            this.poupLayer.mousedown(function(e) {
-                isDraging = true;
-                iX = e.clientX;															
-                iY = e.clientY;
-                this.setCapture && this.setCapture();
-                return false;
-            });
-            document.onmousemove = function(e) {
-                if (isDraging) {
-                var e = e || window.event;
-                var oX = -(width/2) + (e.clientX - iX);									//e.clientX距离屏幕左上角
-                var oY = e.clientY - iY;
-                //console.log(e.clientX, e.clientY);
-                self.poupLayer.css({"marginLeft":oX+"px", "top":oY+"px"});
-                return false;
-                }
-            };
-            $(document).mouseup(function(e) {
-                isDraging = false;
-                this.releaseCapture;
-                //document.onmousemove=null; 
-                //document.onmouseup=null; 
-                e.cancelBubble = true;
-            })
+			this.poupLayer.mousedown(function(e){
+				e.stopPropagation();
+				isDraging = true;
+			});
+			document.onmousemove = function(e){
+				if (isDraging) {
+					self.poupLayer.draggable();
+				};
+			};
+			$(document).mouseup(function(e){
+				isDraging = false;
+				e.stopPropagation();
+			});
 		},
-					
+
 		goto:function(dir){
 			if(dir=='right'){
 				this.index++;
@@ -192,6 +181,7 @@
 				self.clear= false;
 			});
 			this.captionText.text(this.groupData[this.index].caption);
+
 		},
 
 		changePic:function(width,height){
@@ -312,7 +302,7 @@
 																							//对象方法的实现
 		renderDom:function(){
 			var strDom =	'<div class="Poup-show-header" id="Poup-show-header">'+
-								'<button type="button" class="Poup-show100-btn more" data-dismiss="modal">More</button>'+
+								'<button type="button" class="Poup-more-btn" data-dismiss="modal">More</button>'+
 								'<button type="button" class="Poup-show100-btn" data-dismiss="modal">100%</button>'+
 								'<button type="button" class="Poup-show-btn" data-dismiss="modal">Close</button>'+
 								'<p class="Poup-show-title"></p>'+

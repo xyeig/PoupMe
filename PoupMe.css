@@ -97,9 +97,25 @@ a:link {
 	touch-action: manipulation;
 	z-index: 2;
 }
-.more {
+.Poup-more-btn {
+	display: inline-block;
+	padding: 2px 13px;
+	margin-bottom: 0px;
 	position: absolute; right: 78px;
-	padding: 2px 13px;	
+	color: #333;
+	font-size: 8px;
+	font-weight: normal;
+	line-height: 1.2;
+	text-align: center;
+	white-space: nowrap;
+	vertical-align: middle;
+	background-color: #fff;
+	background-image: none;
+	border: 1px solid transparent;
+	border-color: #ccc;
+	border-radius: 3px;
+	touch-action: manipulation;
+	z-index: 2;
 }
 .Poup-btn-l {
 	position: absolute;
